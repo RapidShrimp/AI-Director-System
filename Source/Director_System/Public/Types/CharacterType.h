@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class DIRECTOR_SYSTEM_API UCharacterType : public UDataAsset
 {
 	GENERATED_BODY()

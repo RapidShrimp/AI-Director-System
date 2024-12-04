@@ -43,7 +43,8 @@ void UStatTrackerManager::Handle_HealthChange(AActor* DamageCauser, ACharacterBa
 	FString DamageCauserName = *(DamageCauser != nullptr ? DamageCauser->GetName() : "Unknown");
 	FString DamagedActorName = *(DamagedCharacter != nullptr ? DamagedCharacter->GetName() : "Unknown");
 
-	UE_LOG(LogTemp,Display,TEXT("%s Damaged %s for %f, New Health: %f"),*DamageCauserName,*DamagedActorName,Change,CurrentHealth)
+	UE_LOG(LogTemp,Display,TEXT("%s Damaged %s for %f, New Health: %f"),*DamageCauserName,*DamagedActorName,Change,CurrentHealth);
+
 }
 
 void UStatTrackerManager::Handle_Death(AController* InstigatorController, ACharacterBase* Character)
@@ -59,4 +60,12 @@ void UStatTrackerManager::Handle_Death(AController* InstigatorController, AChara
 	FString DamagedActorName = Character != nullptr ? Character->GetName() : "Unknown";
 
 	UE_LOG(LogTemp,Display,TEXT("%s Killed %s"),*DamageCauserName,*DamagedActorName)
+
+	if(Character == UGameplayStatics::GetPlayerCharacter(this,0))
+	{
+		//Broadcast End
+		OnFinishGame.Broadcast(false);
+		return;
+	}
+	AIDeaths++;
 }

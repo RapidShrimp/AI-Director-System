@@ -3,6 +3,7 @@
 
 #include "Director_System/Public/Characters/CharacterBase.h"
 #include "Director_System/Public/Weapons/WeaponBase.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 
 // Sets default values
@@ -51,12 +52,13 @@ ETeamAttitude::Type ACharacterBase::GetTeamAttitudeTowards(const AActor& Other) 
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-
+	Init(TestType);
 
 }
 
 void ACharacterBase::Init(UCharacterType* Character)
 {
+	if(Character == nullptr){return;}
 	if(bArmed) 
 	{
 		//Spawn Weapons using type data
@@ -65,7 +67,9 @@ void ACharacterBase::Init(UCharacterType* Character)
 			FActorSpawnParameters Params;
 			Params.Owner = this;
 			Params.Name = *("PrimaryWeapon_" + this->GetName());
-			GetWorld()->SpawnActor<AWeaponBase>(AWeaponBase::StaticClass(),Params);
+			PrimaryWeapon = GetWorld()->SpawnActor<AWeaponBase>(AWeaponBase::StaticClass(),Params);
+			IFireable::Execute_InitWeapon(PrimaryWeapon , Character->PrimaryWeapon);
+
 		}
 
 		if(Character->SecondaryWeapon != nullptr)
@@ -73,14 +77,16 @@ void ACharacterBase::Init(UCharacterType* Character)
 			FActorSpawnParameters Params;
 			Params.Owner = this;
 			Params.Name = *("SecondaryWeapon_" + this->GetName());
-			GetWorld()->SpawnActor<AWeaponBase>(AWeaponBase::StaticClass(),Params);
+			SecondaryWeapon = GetWorld()->SpawnActor<AWeaponBase>(AWeaponBase::StaticClass(),Params);
+			IFireable::Execute_InitWeapon(SecondaryWeapon , Character->SecondaryWeapon);
+
 		}
 	}
 }
 
 void ACharacterBase::PickupWeapon(UWeaponType* Weapon)
 {
-	
+	//Out of Scope - AS
 }
 
 void ACharacterBase::StartFire()

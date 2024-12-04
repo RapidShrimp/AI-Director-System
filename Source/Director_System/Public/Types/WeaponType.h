@@ -20,7 +20,7 @@ enum EWeaponType : uint8
 };
 
 
-UCLASS()
+UCLASS(BlueprintType)
 class DIRECTOR_SYSTEM_API UWeaponType : public UDataAsset
 {
 	GENERATED_BODY()
@@ -39,22 +39,22 @@ public:
 
 	//Weapon Stats
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float FiringTime;
+	float FiringTime = 0.10f;
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float ReloadTime;
+	float ReloadTime = 2.5f;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float BulletSpread;
+	float BulletSpread = 0.5f;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	int MaxAmmo;
+	int MaxAmmo = 150;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	int MagSize;
+	int MagSize = 30;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	float Damage;
+	float Damage = 25;
 
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)

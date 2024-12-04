@@ -6,6 +6,9 @@
 #include "Components/ActorComponent.h"
 #include "StatTrackerManager.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FFinishGameSignature,bool, Victory);
+
 class UCharacterStatsTracker;
 class ACharacterBase;
 
@@ -18,12 +21,25 @@ public:
 	// Sets default values for this component's properties
 	UStatTrackerManager();
 
+	FFinishGameSignature OnFinishGame;
 
 	virtual void BeginPlay() override;
 
+protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TArray<TObjectPtr<UCharacterStatsTracker>> _CharacterStatTrackers;
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	float PlayerDamageTaken;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	float PlayerDamageDealt;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	float AIDamageTaken;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	float AIDamageDealt;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	int AIDeaths = 0;
 	
 private:
 

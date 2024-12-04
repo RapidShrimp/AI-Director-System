@@ -33,11 +33,14 @@ protected:
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly);
 	TObjectPtr<AWeaponBase> SelectedWeapon;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly);
 	TObjectPtr<AWeaponBase> PrimaryWeapon;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly);
 	TObjectPtr<AWeaponBase> SecondaryWeapon;
 
 
-
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<UCharacterType> TestType;
 	
 	#pragma region TeamGenerics
 protected:
