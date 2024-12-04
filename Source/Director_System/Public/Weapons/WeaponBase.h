@@ -25,7 +25,6 @@ public:
 	virtual void StopFiring_Implementation() override;
 	virtual void Reload_Implementation() override;
 	virtual void CancelReload_Implementation() override;
-
 protected:
 	virtual void OnFire();
 

@@ -4,10 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GenericTeamAgentInterface.h"
+#include "Components/HealthComponent.h"
 #include "GameFramework/Character.h"
+#include "Types/CharacterType.h"
 #include "CharacterBase.generated.h"
 class UWeaponType;
 class AWeaponBase;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FCharacterReportHealthChangeSignature,AActor*,DamageCauser,ACharacterBase*,DamagedCharacter, float,CurrentHealth,float,MaxHealth,float,Change);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterReportDeathSignature, AController*, InstigatorController);
 
 UCLASS()
 class DIRECTOR_SYSTEM_API ACharacterBase : public ACharacter , public IGenericTeamAgentInterface
@@ -15,35 +20,52 @@ class DIRECTOR_SYSTEM_API ACharacterBase : public ACharacter , public IGenericTe
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
+
 	ACharacterBase();
 
-#pragma region TeamGenerics
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	FGenericTeamId _TeamID;
-	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
-	virtual FGenericTeamId GetGenericTeamId() const override;
-#pragma  endregion
-	 
+	//Delegates
+	FCharacterReportDeathSignature OnReportDeath;
+	FCharacterReportHealthChangeSignature OnReportHealthChange;
+	
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	bool bArmed;
+	TObjectPtr<UHealthComponent> _Health;
+
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly);
 	TObjectPtr<AWeaponBase> SelectedWeapon;
 	TObjectPtr<AWeaponBase> PrimaryWeapon;
 	TObjectPtr<AWeaponBase> SecondaryWeapon;
+
+
+
+	
+	#pragma region TeamGenerics
+protected:
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	FGenericTeamId _TeamID;
+	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
+	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
+	#pragma  endregion
+	 
+protected:
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	bool bArmed;
+	
+	virtual void BeginPlay() override;
 	
 public:
-
-	void Init();
-	//Weapons
+	void Init(UCharacterType* Character);
+	
 	void PickupWeapon(UWeaponType* Weapon);
 	void StartFire();
 	void StopFire();
 	void Reload();
 	void SwapWeapon();
+
+private:
+	UFUNCTION()
+	void Handle_Death(AController* InstigatorController);
+	UFUNCTION()
+	void Handle_HealthChange(AActor* DamageCauser, float CurrentHealth, float MaxHealth, float Change);
 };

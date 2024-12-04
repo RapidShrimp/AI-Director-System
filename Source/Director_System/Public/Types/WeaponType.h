@@ -10,12 +10,24 @@ class AWeaponBase;
 /**
  * 
  */
+
+UENUM()
+enum EWeaponType : uint8
+{
+	Primary,
+	Secondary,
+	Melee
+};
+
+
 UCLASS()
 class DIRECTOR_SYSTEM_API UWeaponType : public UDataAsset
 {
 	GENERATED_BODY()
 
 public:
+
+	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UStaticMesh> WeaponMesh;
 
@@ -43,4 +55,9 @@ public:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	float Damage;
+
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TArray<FVector> RailLocations;
+
 };

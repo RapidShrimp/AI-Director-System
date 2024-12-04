@@ -10,6 +10,11 @@ ACharacterBase::ACharacterBase()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	_Health = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComp"));
+	_Health->OnDead.AddUniqueDynamic(this,&ACharacterBase::Handle_Death);
+	_Health->OnHealthChanged.AddUniqueDynamic(this,&ACharacterBase::Handle_HealthChange);
+	
 }
 
 void ACharacterBase::SetGenericTeamId(const FGenericTeamId& TeamID)
@@ -22,29 +27,60 @@ FGenericTeamId ACharacterBase::GetGenericTeamId() const
 	return _TeamID;
 }
 
+ETeamAttitude::Type ACharacterBase::GetTeamAttitudeTowards(const AActor& Other) const
+{
+	FGenericTeamId OtherTeamID (FGenericTeamId::GetTeamIdentifier(&Other));
+	{
+		if(_TeamID == FGenericTeamId(255))
+		{
+			return ETeamAttitude::Neutral;
+		}
+		if(_TeamID == OtherTeamID)
+		{
+			return ETeamAttitude::Friendly;
+		}
+		if(_TeamID != OtherTeamID)
+		{
+			return ETeamAttitude::Hostile;
+		}
+		return ETeamAttitude::Neutral;
+	}
+}
+
 // Called when the game starts or when spawned
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Init();
 
 }
 
-void ACharacterBase::Init()
+void ACharacterBase::Init(UCharacterType* Character)
 {
-	if(bArmed)
+	if(bArmed) 
 	{
-		FActorSpawnParameters Params;
-		Params.Owner = this;
-		Params.Name = *("PrimaryWeapon_" + this->GetName());
-		GetWorld()->SpawnActor<AWeaponBase>(AWeaponBase::StaticClass(),Params);
+		//Spawn Weapons using type data
+		if(Character->PrimaryWeapon != nullptr)
+		{
+			FActorSpawnParameters Params;
+			Params.Owner = this;
+			Params.Name = *("PrimaryWeapon_" + this->GetName());
+			GetWorld()->SpawnActor<AWeaponBase>(AWeaponBase::StaticClass(),Params);
+		}
+
+		if(Character->SecondaryWeapon != nullptr)
+		{
+			FActorSpawnParameters Params;
+			Params.Owner = this;
+			Params.Name = *("SecondaryWeapon_" + this->GetName());
+			GetWorld()->SpawnActor<AWeaponBase>(AWeaponBase::StaticClass(),Params);
+		}
 	}
 }
 
 void ACharacterBase::PickupWeapon(UWeaponType* Weapon)
 {
-
+	
 }
 
 void ACharacterBase::StartFire()
@@ -90,4 +126,14 @@ void ACharacterBase::SwapWeapon()
 		GEngine->AddOnScreenDebugMessage(-1,5,FColor::Cyan,TEXT("Swapped Weapon"));
 	}
 	
+}
+
+void ACharacterBase::Handle_Death(AController* InstigatorController)
+{
+	OnReportDeath.Broadcast(InstigatorController);
+}
+
+void ACharacterBase::Handle_HealthChange(AActor* DamageCauser, float CurrentHealth, float MaxHealth, float Change)
+{
+	OnReportHealthChange.Broadcast(DamageCauser,this,CurrentHealth,MaxHealth,Change);
 }
