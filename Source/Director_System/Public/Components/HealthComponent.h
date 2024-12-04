@@ -8,7 +8,7 @@
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeadSignature,AController*,Instigator);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthUpdatedSignature,AActor*,DamageCauser,float,CurrentHealth,float,MaxHealth,float,Change);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnHealthChangeSignature,AActor*,DamageCauser,float,CurrentHealth,float,MaxHealth,float,Change);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DIRECTOR_SYSTEM_API UHealthComponent : public UActorComponent
@@ -33,7 +33,7 @@ public:
 	FOnDeadSignature OnDead;
 	
 	UPROPERTY(BlueprintAssignable)
-	FOnHealthUpdatedSignature OnHealthChanged;
+	FOnHealthChangeSignature OnHealthChanged;
 protected:
 
 	UFUNCTION()

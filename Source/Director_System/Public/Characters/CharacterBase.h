@@ -11,8 +11,8 @@
 class UWeaponType;
 class AWeaponBase;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FCharacterReportHealthChangeSignature,AActor*,DamageCauser,ACharacterBase*,DamagedCharacter, float,CurrentHealth,float,MaxHealth,float,Change);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterReportDeathSignature, AController*, InstigatorController);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FCharacterHealthChangeSignature,AActor*,DamageCauser,ACharacterBase*,DamagedCharacter, float,CurrentHealth,float,MaxHealth,float,Change);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCharacterDeathSignature, AController*, InstigatorController, ACharacterBase*, DamagedCharacter);
 
 UCLASS()
 class DIRECTOR_SYSTEM_API ACharacterBase : public ACharacter , public IGenericTeamAgentInterface
@@ -24,8 +24,8 @@ public:
 	ACharacterBase();
 
 	//Delegates
-	FCharacterReportDeathSignature OnReportDeath;
-	FCharacterReportHealthChangeSignature OnReportHealthChange;
+	FCharacterDeathSignature OnDeath;
+	FCharacterHealthChangeSignature OnHealthChange;
 	
 protected:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
@@ -44,6 +44,7 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	FGenericTeamId _TeamID;
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
+public:
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 	#pragma  endregion

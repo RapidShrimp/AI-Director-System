@@ -130,10 +130,10 @@ void ACharacterBase::SwapWeapon()
 
 void ACharacterBase::Handle_Death(AController* InstigatorController)
 {
-	OnReportDeath.Broadcast(InstigatorController);
+	OnDeath.Broadcast(InstigatorController,this);
 }
 
 void ACharacterBase::Handle_HealthChange(AActor* DamageCauser, float CurrentHealth, float MaxHealth, float Change)
 {
-	OnReportHealthChange.Broadcast(DamageCauser,this,CurrentHealth,MaxHealth,Change);
+	OnHealthChange.Broadcast(DamageCauser,this,CurrentHealth,MaxHealth,Change);
 }

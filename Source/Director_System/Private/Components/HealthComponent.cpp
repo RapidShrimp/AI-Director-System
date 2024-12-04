@@ -37,8 +37,8 @@ void UHealthComponent::KillActor()
 {
 	if(GetOwner() != nullptr)
 	{
-		UE_LOG(LogTemp,Display,TEXT("Console Killed Actor %s"),*GetOwner()->GetName())
 		UGameplayStatics::ApplyDamage(GetOwner(),MaxHealth,nullptr,nullptr,UDamageType::StaticClass());
+		UE_LOG(LogTemp,Display,TEXT("Console Killed Actor %s"),*GetOwner()->GetName())
 	}
 }
 

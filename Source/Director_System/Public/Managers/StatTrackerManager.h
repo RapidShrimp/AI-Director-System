@@ -6,11 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "StatTrackerManager.generated.h"
 
+class UCharacterStatsTracker;
 class ACharacterBase;
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FReportHealthSignature, float, Change, int, TeamID);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FReportDeathSignature, int, TeamID);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FReportWeaponUseSignature, AController*,Controller,float,AmmoDispatchValue);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DIRECTOR_SYSTEM_API UStatTrackerManager : public UActorComponent
@@ -20,19 +17,18 @@ class DIRECTOR_SYSTEM_API UStatTrackerManager : public UActorComponent
 public:
 	// Sets default values for this component's properties
 	UStatTrackerManager();
-	
-	virtual void BeginPlay() override;
-	
-	FReportHealthSignature OnReportHealth;
-	FReportDeathSignature OnReportDeath;
-	FReportWeaponUseSignature OnReportWeaponUsed;
 
-protected:
+
+	virtual void BeginPlay() override;
+
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
-	TObjectPtr<ACharacterBase> TrackedCharacter;
+	TArray<TObjectPtr<UCharacterStatsTracker>> _CharacterStatTrackers;
+
+	
 private:
+
 	UFUNCTION()
-	void Handle_HealthChangeReport(AActor* DamageCauser, ACharacterBase* DamagedCharacter, float CurrentHealth, float MaxHealth, float Change);
+	void Handle_HealthChange(AActor* DamageCauser, ACharacterBase* DamagedCharacter, float CurrentHealth, float MaxHealth, float Change);
 	UFUNCTION()
-	void Handle_DeathReport(AController* InstigatorController);
+	void Handle_Death(AController* InstigatorController, ACharacterBase* Character);
 };
