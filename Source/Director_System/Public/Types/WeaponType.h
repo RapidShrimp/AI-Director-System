@@ -29,7 +29,7 @@ public:
 
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	TObjectPtr<UStaticMesh> WeaponMesh;
+	TObjectPtr<USkeletalMesh> WeaponMesh;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TSubclassOf<AWeaponBase> WeaponClass;

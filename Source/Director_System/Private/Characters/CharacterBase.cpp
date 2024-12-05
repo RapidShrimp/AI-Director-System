@@ -70,6 +70,10 @@ void ACharacterBase::Init(UCharacterType* Character)
 			PrimaryWeapon = GetWorld()->SpawnActor<AWeaponBase>(AWeaponBase::StaticClass(),Params);
 			IFireable::Execute_InitWeapon(PrimaryWeapon , Character->PrimaryWeapon);
 
+			FAttachmentTransformRules AttachParams {EAttachmentRule::SnapToTarget,false};
+			AttachParams.RotationRule = EAttachmentRule::SnapToTarget;
+			PrimaryWeapon->AttachToComponent(GetMesh(),AttachParams,"Weapon_R");
+
 		}
 
 		if(Character->SecondaryWeapon != nullptr)
@@ -80,6 +84,9 @@ void ACharacterBase::Init(UCharacterType* Character)
 			SecondaryWeapon = GetWorld()->SpawnActor<AWeaponBase>(AWeaponBase::StaticClass(),Params);
 			IFireable::Execute_InitWeapon(SecondaryWeapon , Character->SecondaryWeapon);
 
+			FAttachmentTransformRules AttachParams {EAttachmentRule::SnapToTarget,false};
+			AttachParams.RotationRule = EAttachmentRule::SnapToTarget;
+			SecondaryWeapon->AttachToComponent(GetMesh(),AttachParams,"Weapon_L");
 		}
 	}
 }
