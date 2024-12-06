@@ -60,11 +60,17 @@ protected:
 	
 public:
 	void Init(UCharacterType* Character);
-	
-	void PickupWeapon(UWeaponType* Weapon);
+
+	UFUNCTION(BlueprintCallable)
+	void PickupWeapon(UWeaponType* Weapon, bool IsPrimary);
+
+	UFUNCTION(BlueprintCallable)
 	void StartFire();
+	UFUNCTION(BlueprintCallable)
 	void StopFire();
+	UFUNCTION(BlueprintCallable)
 	void Reload();
+	UFUNCTION(BlueprintCallable)
 	void SwapWeapon();
 
 private:

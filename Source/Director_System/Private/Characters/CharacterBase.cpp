@@ -73,7 +73,7 @@ void ACharacterBase::Init(UCharacterType* Character)
 			FAttachmentTransformRules AttachParams {EAttachmentRule::SnapToTarget,false};
 			AttachParams.RotationRule = EAttachmentRule::SnapToTarget;
 			PrimaryWeapon->AttachToComponent(GetMesh(),AttachParams,"Weapon_R");
-
+			SelectedWeapon = PrimaryWeapon;
 		}
 
 		if(Character->SecondaryWeapon != nullptr)
@@ -91,7 +91,7 @@ void ACharacterBase::Init(UCharacterType* Character)
 	}
 }
 
-void ACharacterBase::PickupWeapon(UWeaponType* Weapon)
+void ACharacterBase::PickupWeapon(UWeaponType* Weapon, bool IsPrimary)
 {
 	//Out of Scope - AS
 }
@@ -99,6 +99,7 @@ void ACharacterBase::PickupWeapon(UWeaponType* Weapon)
 void ACharacterBase::StartFire()
 {
 	if(SelectedWeapon == nullptr){return;}
+	UE_LOG(LogTemp,Display,TEXT("Firing"));
 	IFireable::Execute_StartFiring(SelectedWeapon);
 
 }
@@ -107,6 +108,7 @@ void ACharacterBase::StopFire()
 {
 	if(SelectedWeapon == nullptr){return;}
 	IFireable::Execute_StopFiring(SelectedWeapon);
+	UE_LOG(LogTemp,Display,TEXT("Stop Firing"));
 
 }
 

@@ -7,6 +7,7 @@
 #include "UObject/Object.h"
 #include "WeaponBase.generated.h"
 
+class UArrowComponent;
 class UCameraComponent;
 /**
  * 
@@ -20,18 +21,28 @@ class DIRECTOR_SYSTEM_API AWeaponBase : public AActor, public IFireable
 protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TObjectPtr<USkeletalMeshComponent> _Mesh;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	TObjectPtr<UArrowComponent> _Muzzle;
 public:
 	virtual void InitWeapon_Implementation(UWeaponType* Weapon) override;
 	virtual void StartFiring_Implementation() override;
 	virtual void StopFiring_Implementation() override;
 	virtual void Reload_Implementation() override;
 	virtual void CancelReload_Implementation() override;
+
+	void SetFireTarget(AActor* Target);
+	
 protected:
 	virtual void OnFire();
 
 	TObjectPtr<UCameraComponent> OwningPlayerCam; 
 
-	FVector MuzzleLoc;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<AActor> FireTarget;
+
+	
+	UPROPERTY(VisibleAnywhere)
 	float FiringTime;
 	float BulletSpread;
 	int CurrentAmmo;
@@ -41,9 +52,9 @@ protected:
 	float ReloadTime;
 	float Damage;
 	
-	bool bCanFire;
+	bool bCanFire = true;
 	bool bReloading;
-
+	float FireDistance = 4000.0f;
 	FTimerHandle FiringTimer;
 	FTimerHandle ReloadTimer;
 

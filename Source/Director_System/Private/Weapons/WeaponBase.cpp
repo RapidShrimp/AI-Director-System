@@ -5,6 +5,7 @@
 
 #include "Camera/CameraComponent.h"
 #include "Characters/CharacterBase.h"
+#include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
@@ -12,6 +13,9 @@ AWeaponBase::AWeaponBase()
 {
 	_Mesh = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon Mesh");
 	_Mesh->SetupAttachment(RootComponent);
+
+	_Muzzle = CreateDefaultSubobject<UArrowComponent>("MuzzleLocation");
+	_Muzzle->SetupAttachment(_Mesh);
 }
 
 void AWeaponBase::InitWeapon_Implementation(UWeaponType* Weapon)
@@ -41,7 +45,7 @@ void AWeaponBase::InitWeapon_Implementation(UWeaponType* Weapon)
 		}
 	}
 	//Weapon Stats
-	MuzzleLoc = Weapon->MuzzleLocation;
+	_Muzzle->SetRelativeLocation(Weapon->MuzzleLocation);
 	FiringTime = Weapon->FiringTime;
 	BulletSpread = Weapon->BulletSpread;
 	CurrentAmmo = Weapon->MagSize;
@@ -54,7 +58,7 @@ void AWeaponBase::InitWeapon_Implementation(UWeaponType* Weapon)
 	_Mesh->SetSkeletalMeshAsset(Weapon->WeaponMesh);
 
 	if(_Mesh->DoesSocketExist("Muzzle") == false){return;}
-	MuzzleLoc = _Mesh->GetSocketLocation("Muzzle");
+	_Muzzle->SetRelativeLocation(_Mesh->GetSocketLocation("Muzzle"));
 }
 
 void AWeaponBase::StartFiring_Implementation()
@@ -86,6 +90,11 @@ void AWeaponBase::CancelReload_Implementation()
 	ReloadTimer.Invalidate();
 }
 
+void AWeaponBase::SetFireTarget(AActor* Target)
+{
+	FireTarget = Target;
+}
+
 void AWeaponBase::OnFire()
 {
 	if(CurrentAmmo <= 0)
@@ -96,19 +105,35 @@ void AWeaponBase::OnFire()
 	}
 	
 	//Add Firing Override Functionality in Child if wanting to replace hitscan weapon (And remove below code)
-
+	
 	FHitResult Result;
-	FVector ForwardDir = Owner != nullptr ? GetActorForwardVector() : Owner->GetActorForwardVector(); 
+	FVector EndLocation;
+	if(OwningPlayerCam)
+	{
+		EndLocation = OwningPlayerCam->GetForwardVector() * FireDistance;
+	}
+	else
+	{
+		if(FireTarget == nullptr){return;}
+		EndLocation = FireTarget->GetActorLocation();
+		//TODO - Token Firing
+		if(!true)
+		{
+			//Find space around player to hit.	
+		}
+	}
+	
+	
 	bool Hit = UKismetSystemLibrary::LineTraceSingle(this,
-		MuzzleLoc,
-		ForwardDir,
+		_Muzzle->GetComponentLocation(),
+		EndLocation,
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,{},
-		EDrawDebugTrace::None,
+		EDrawDebugTrace::Persistent,
 		Result,
 		true,
 		FLinearColor::Red,
-		FLinearColor::Green);
+		FLinearColor::Green,5.0f);
 	if(Hit)
 	{
 		UGameplayStatics::ApplyDamage(Result.GetActor(),Damage,GetInstigatorController(),GetOwner(),UDamageType::StaticClass());
