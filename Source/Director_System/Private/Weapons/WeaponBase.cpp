@@ -77,7 +77,7 @@ void AWeaponBase::StopFiring_Implementation()
 
 void AWeaponBase::Reload_Implementation()
 {
-	StopFiring();
+	Execute_StopFiring(this);
 	bCanFire = false;
 	bReloading = true;
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimer,this,&AWeaponBase::OnReloadComplete,ReloadTime,false);
@@ -99,8 +99,8 @@ void AWeaponBase::OnFire()
 {
 	if(CurrentAmmo <= 0)
 	{
-		StopFiring();
-		Reload();
+		Execute_StopFiring(this);
+		Execute_Reload(this);
 		return;
 	}
 	
@@ -110,7 +110,7 @@ void AWeaponBase::OnFire()
 	FVector EndLocation;
 	if(OwningPlayerCam)
 	{
-		EndLocation = OwningPlayerCam->GetForwardVector() * FireDistance;
+		EndLocation =  OwningPlayerCam->GetComponentLocation() + OwningPlayerCam->GetForwardVector() * FireDistance;
 	}
 	else
 	{
@@ -138,6 +138,7 @@ void AWeaponBase::OnFire()
 	{
 		UGameplayStatics::ApplyDamage(Result.GetActor(),Damage,GetInstigatorController(),GetOwner(),UDamageType::StaticClass());
 	}
+	CurrentAmmo--;
 }
 
 void AWeaponBase::OnReloadComplete()

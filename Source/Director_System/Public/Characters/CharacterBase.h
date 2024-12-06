@@ -23,6 +23,7 @@ public:
 
 	ACharacterBase();
 
+	
 	//Delegates
 	FCharacterDeathSignature OnDeath;
 	FCharacterHealthChangeSignature OnHealthChange;
