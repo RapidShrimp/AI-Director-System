@@ -2,9 +2,9 @@
 
 
 #include "Director_System/Public/Characters/CharacterBase.h"
+#include "Director_System/Public/Types/CharacterType.h"
 #include "Director_System/Public/Weapons/WeaponBase.h"
-#include "Kismet/KismetSystemLibrary.h"
-
+#include "GameFramework/PawnMovementComponent.h"
 
 // Sets default values
 ACharacterBase::ACharacterBase()
@@ -15,60 +15,37 @@ ACharacterBase::ACharacterBase()
 	_Health = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComp"));
 	_Health->OnDead.AddUniqueDynamic(this,&ACharacterBase::Handle_Death);
 	_Health->OnHealthChanged.AddUniqueDynamic(this,&ACharacterBase::Handle_HealthChange);
-	
-}
-
-void ACharacterBase::SetGenericTeamId(const FGenericTeamId& TeamID)
-{
-	_TeamID = TeamID;
-}
-
-FGenericTeamId ACharacterBase::GetGenericTeamId() const
-{
-	return _TeamID;
-}
-
-ETeamAttitude::Type ACharacterBase::GetTeamAttitudeTowards(const AActor& Other) const
-{
-	FGenericTeamId OtherTeamID (FGenericTeamId::GetTeamIdentifier(&Other));
-	{
-		if(_TeamID == FGenericTeamId(255))
-		{
-			return ETeamAttitude::Neutral;
-		}
-		if(_TeamID == OtherTeamID)
-		{
-			return ETeamAttitude::Friendly;
-		}
-		if(_TeamID != OtherTeamID)
-		{
-			return ETeamAttitude::Hostile;
-		}
-		return ETeamAttitude::Neutral;
-	}
 }
 
 // Called when the game starts or when spawned
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	Init(TestType);
-
 }
 
-void ACharacterBase::Init(UCharacterType* Character)
+void ACharacterBase::BP_Init(UCharacterType* InCharacter)
 {
-	if(Character == nullptr){return;}
+	Init(InCharacter);
+}
+
+void ACharacterBase::Init(UCharacterType* InCharacter)
+{
+	if(InCharacter == nullptr){return;}
+
+	if(InCharacter->SkeletalMesh)
+	{
+		GetMesh()->SetSkeletalMesh(InCharacter->SkeletalMesh);
+	}
 	if(bArmed) 
 	{
 		//Spawn Weapons using type data
-		if(Character->PrimaryWeapon != nullptr)
+		if(InCharacter->PrimaryWeapon != nullptr)
 		{
 			FActorSpawnParameters Params;
 			Params.Owner = this;
 			Params.Name = *("PrimaryWeapon_" + this->GetName());
 			PrimaryWeapon = GetWorld()->SpawnActor<AWeaponBase>(AWeaponBase::StaticClass(),Params);
-			IFireable::Execute_InitWeapon(PrimaryWeapon , Character->PrimaryWeapon);
+			IFireable::Execute_InitWeapon(PrimaryWeapon , InCharacter->PrimaryWeapon);
 
 			FAttachmentTransformRules AttachParams {EAttachmentRule::SnapToTarget,false};
 			AttachParams.RotationRule = EAttachmentRule::SnapToTarget;
@@ -76,19 +53,30 @@ void ACharacterBase::Init(UCharacterType* Character)
 			SelectedWeapon = PrimaryWeapon;
 		}
 
-		if(Character->SecondaryWeapon != nullptr)
+		if(InCharacter->SecondaryWeapon != nullptr)
 		{
 			FActorSpawnParameters Params;
 			Params.Owner = this;
 			Params.Name = *("SecondaryWeapon_" + this->GetName());
 			SecondaryWeapon = GetWorld()->SpawnActor<AWeaponBase>(AWeaponBase::StaticClass(),Params);
-			IFireable::Execute_InitWeapon(SecondaryWeapon , Character->SecondaryWeapon);
+			IFireable::Execute_InitWeapon(SecondaryWeapon , InCharacter->SecondaryWeapon);
 
 			FAttachmentTransformRules AttachParams {EAttachmentRule::SnapToTarget,false};
 			AttachParams.RotationRule = EAttachmentRule::SnapToTarget;
 			SecondaryWeapon->AttachToComponent(GetMesh(),AttachParams,"Weapon_L");
 		}
 	}
+}
+
+
+void ACharacterBase::SetGenericTeamId(const FGenericTeamId& TeamID)
+{
+	_TeamID = TeamID; 
+}
+
+FGenericTeamId ACharacterBase::GetGenericTeamId() const
+{
+	return _TeamID;
 }
 
 void ACharacterBase::PickupWeapon(UWeaponType* Weapon, bool IsPrimary)
@@ -108,8 +96,6 @@ void ACharacterBase::StopFire()
 {
 	if(SelectedWeapon == nullptr){return;}
 	IFireable::Execute_StopFiring(SelectedWeapon);
-	UE_LOG(LogTemp,Display,TEXT("Stop Firing"));
-
 }
 
 void ACharacterBase::Reload()
@@ -141,6 +127,17 @@ void ACharacterBase::SwapWeapon()
 		GEngine->AddOnScreenDebugMessage(-1,5,FColor::Cyan,TEXT("Swapped Weapon"));
 	}
 	
+}
+
+void ACharacterBase::StartCrouch()
+{
+	GEngine->AddOnScreenDebugMessage(-1,5,FColor::Cyan,TEXT("Crouched"));
+	Crouch();
+}
+
+void ACharacterBase::StopCrouch()
+{
+	UnCrouch();
 }
 
 void ACharacterBase::Handle_Death(AController* InstigatorController)

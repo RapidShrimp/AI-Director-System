@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "WeaponType.h"
+#include "Characters/CharacterBase.h"
 #include "Engine/DataAsset.h"
 #include "CharacterType.generated.h"
 
@@ -16,6 +17,13 @@ class DIRECTOR_SYSTEM_API UCharacterType : public UDataAsset
 	GENERATED_BODY()
 
 public:
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TSubclassOf<ACharacterBase> CharacterClass = ACharacterBase::StaticClass();
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<USkeletalMesh> SkeletalMesh;
+	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UWeaponType> PrimaryWeapon;
 

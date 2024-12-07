@@ -6,8 +6,9 @@
 #include "GenericTeamAgentInterface.h"
 #include "Components/HealthComponent.h"
 #include "GameFramework/Character.h"
-#include "Types/CharacterType.h"
 #include "CharacterBase.generated.h"
+
+class UCharacterType;
 class UWeaponType;
 class AWeaponBase;
 
@@ -15,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FCharacterHealthChangeSignature,AA
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCharacterDeathSignature, AController*, InstigatorController, ACharacterBase*, DamagedCharacter);
 
 UCLASS()
-class DIRECTOR_SYSTEM_API ACharacterBase : public ACharacter , public IGenericTeamAgentInterface
+class DIRECTOR_SYSTEM_API ACharacterBase : public ACharacter ,public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -23,8 +24,8 @@ public:
 
 	ACharacterBase();
 
-	
 	//Delegates
+	
 	FCharacterDeathSignature OnDeath;
 	FCharacterHealthChangeSignature OnHealthChange;
 	
@@ -39,30 +40,29 @@ protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly);
 	TObjectPtr<AWeaponBase> SecondaryWeapon;
 
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	TObjectPtr<UCharacterType> TestType;
 	
-	#pragma region TeamGenerics
+#pragma  region TeamInterface
+
 protected:
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	FGenericTeamId _TeamID;
-	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 public:
-	virtual FGenericTeamId GetGenericTeamId() const override;
-	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
-	#pragma  endregion
-	 
-protected:
+	void SetGenericTeamId(const FGenericTeamId& TeamID) override;
+	FGenericTeamId GetGenericTeamId() const override;
+#pragma endregion
+	
+protected:	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	bool bArmed;
 	
 	virtual void BeginPlay() override;
 	
 public:
-	void Init(UCharacterType* Character);
 
 	UFUNCTION(BlueprintCallable)
+	void BP_Init(UCharacterType* InCharacter);
+	void Init(UCharacterType* InCharacter);
+
+	UFUNCTION(BlueprintCallable) //TODO - Out of Scope
 	void PickupWeapon(UWeaponType* Weapon, bool IsPrimary);
 
 	UFUNCTION(BlueprintCallable)
@@ -74,6 +74,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SwapWeapon();
 
+	UFUNCTION(BlueprintCallable)
+	void StartCrouch();
+	UFUNCTION(BlueprintCallable)
+	void StopCrouch();
+	
+	
 private:
 	UFUNCTION()
 	void Handle_Death(AController* InstigatorController);
