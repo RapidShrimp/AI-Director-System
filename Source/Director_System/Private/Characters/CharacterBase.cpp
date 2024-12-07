@@ -4,7 +4,6 @@
 #include "Director_System/Public/Characters/CharacterBase.h"
 #include "Director_System/Public/Types/CharacterType.h"
 #include "Director_System/Public/Weapons/WeaponBase.h"
-#include "GameFramework/PawnMovementComponent.h"
 
 // Sets default values
 ACharacterBase::ACharacterBase()

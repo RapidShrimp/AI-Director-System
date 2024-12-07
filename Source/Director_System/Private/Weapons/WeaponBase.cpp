@@ -111,6 +111,9 @@ void AWeaponBase::OnFire()
 	if(OwningPlayerCam)
 	{
 		EndLocation =  OwningPlayerCam->GetComponentLocation() + OwningPlayerCam->GetForwardVector() * FireDistance;
+		FHitResult CamHit;
+		UKismetSystemLibrary::LineTraceSingle(this,OwningPlayerCam->GetComponentLocation(),EndLocation,UEngineTypes::ConvertToTraceType(ECC_Visibility),false,{},EDrawDebugTrace::None,CamHit,true);
+		EndLocation = CamHit.bBlockingHit ? EndLocation = CamHit.Location : CamHit.TraceEnd;
 	}
 	else
 	{
