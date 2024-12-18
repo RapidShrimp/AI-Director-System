@@ -95,6 +95,11 @@ void AWeaponBase::SetFireTarget(AActor* Target)
 	FireTarget = Target;
 }
 
+void AWeaponBase::SetTokenState(bool TokenReceived)
+{
+	bHasToken = TokenReceived;
+}
+
 void AWeaponBase::OnFire()
 {
 	if(CurrentAmmo <= 0)
@@ -108,6 +113,7 @@ void AWeaponBase::OnFire()
 	
 	FHitResult Result;
 	FVector EndLocation;
+	FVector StartLocation = _Muzzle->GetComponentLocation();
 	if(OwningPlayerCam)
 	{
 		EndLocation =  OwningPlayerCam->GetComponentLocation() + OwningPlayerCam->GetForwardVector() * FireDistance;
@@ -118,17 +124,36 @@ void AWeaponBase::OnFire()
 	else
 	{
 		if(FireTarget == nullptr){return;}
-		EndLocation = FireTarget->GetActorLocation();
-		//TODO - Token Firing
-		if(!true)
+
+		if(!bHasToken)
 		{
-			//Find space around player to hit.	
+			//Working
+			FVector FireDir =  FireTarget->GetActorLocation() - StartLocation;
+			FireDir.Normalize();
+			DrawDebugLine(GetWorld(),FireTarget->GetActorLocation(),FireTarget->GetActorLocation() + FireDir * 50,FColor::Cyan);
+			
+			//Working
+			FVector RightDir = FVector::CrossProduct(FVector::UpVector,FireDir);
+			DrawDebugLine(GetWorld(),FireTarget->GetActorLocation(),FireTarget->GetActorLocation() + RightDir * 50,FColor::Green);
+
+			//Not Working
+			FVector VectorPass = FireTarget->GetActorLocation() + RightDir * 50;
+			FVector FireDirection = VectorPass - StartLocation;
+			DrawDebugLine(GetWorld(),StartLocation,FireDirection * FireDistance ,FColor::Yellow);
+
+			float RandomZ = FMath::RandRange(-50,50);
+			FireDirection.Z = FireDirection.Z + RandomZ;
+			EndLocation = FireDirection * FireDistance;
+		}
+		else
+		{
+			EndLocation = FireTarget->GetActorLocation();
 		}
 	}
 	
 	
 	bool Hit = UKismetSystemLibrary::LineTraceSingle(this,
-		_Muzzle->GetComponentLocation(),
+		StartLocation,
 		EndLocation,
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
 		false,{},

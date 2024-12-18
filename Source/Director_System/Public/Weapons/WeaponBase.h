@@ -32,8 +32,11 @@ public:
 	virtual void CancelReload_Implementation() override;
 
 	void SetFireTarget(AActor* Target);
-	
+
+	void SetTokenState(bool TokenReceived);
 protected:
+
+	bool bHasToken = false;
 	virtual void OnFire();
 
 	TObjectPtr<UCameraComponent> OwningPlayerCam; 
@@ -41,6 +44,7 @@ protected:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<AActor> FireTarget;
 
+	
 	
 	UPROPERTY(VisibleAnywhere)
 	float FiringTime;
