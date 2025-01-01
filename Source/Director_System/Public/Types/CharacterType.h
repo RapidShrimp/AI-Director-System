@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "WeaponType.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "Characters/CharacterBase.h"
 #include "Engine/DataAsset.h"
 #include "CharacterType.generated.h"
@@ -23,7 +24,10 @@ public:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<USkeletalMesh> SkeletalMesh;
-	
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<UBehaviorTree> Behaviour;
+
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<UWeaponType> PrimaryWeapon;
 
