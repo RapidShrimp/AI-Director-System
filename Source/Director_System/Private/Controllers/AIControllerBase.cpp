@@ -3,8 +3,10 @@
 
 #include "Controllers/AIControllerBase.h"
 
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Characters/CharacterBase.h"
 #include "Types/CharacterType.h"
+#include "Weapons/WeaponBase.h"
 
 void AAIControllerBase::SpawnAI(UCharacterType* InCharacter, UBehaviorTree* Behaviour, uint8 AssignTeamID, FTransform InTransform)
 {
@@ -28,6 +30,22 @@ void AAIControllerBase::StartGame()
 		return;
 	}
 	RunBehaviorTree(BehaviourTree);
+}
+
+void AAIControllerBase::SetFireTarget(AActor* Target)
+{
+	if(!Blackboard || !_ControlledPawn)
+	{
+		UE_LOG(LogTemp,Error,TEXT("NO PAWN OR BLACKBOARD"))
+		return;
+	}
+	Blackboard->SetValueAsObject("Target",Target);
+	AWeaponBase* Gun = _ControlledPawn->GetCurrentWeapon();
+
+	if(Gun != nullptr)
+	{
+		Gun->SetFireTarget(Target);
+	}
 }
 
 ETeamAttitude::Type AAIControllerBase::GetTeamAttitudeTowards(const AActor& Other) const

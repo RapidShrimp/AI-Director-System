@@ -75,6 +75,8 @@ public:
 	void SwapWeapon();
 
 	UFUNCTION(BlueprintCallable)
+	AWeaponBase* GetCurrentWeapon();
+	UFUNCTION(BlueprintCallable)
 	void StartCrouch();
 	UFUNCTION(BlueprintCallable)
 	void StopCrouch();

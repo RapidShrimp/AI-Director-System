@@ -128,6 +128,11 @@ void ACharacterBase::SwapWeapon()
 	
 }
 
+AWeaponBase* ACharacterBase::GetCurrentWeapon()
+{
+	return SelectedWeapon;
+}
+
 void ACharacterBase::StartCrouch()
 {
 	GEngine->AddOnScreenDebugMessage(-1,5,FColor::Cyan,TEXT("Crouched"));

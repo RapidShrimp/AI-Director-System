@@ -27,4 +27,6 @@ public:
 	void SpawnAI(UCharacterType* InCharacter, UBehaviorTree* Behaviour, uint8 AssignTeamID, FTransform InTransform);
 	UFUNCTION(BlueprintCallable)
 	void StartGame();
+	UFUNCTION(BlueprintCallable)
+	void SetFireTarget(AActor* Target);
 };
