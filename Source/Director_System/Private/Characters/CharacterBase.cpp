@@ -32,6 +32,11 @@ void ACharacterBase::BP_Init(UCharacterType* InCharacter)
 	Init(InCharacter);
 }
 
+void ACharacterBase::Handle_WeaponFired(AWeaponBase* Weapon)
+{
+	OnCharacterWeaponFiredSignature.Broadcast(Weapon,this);
+}
+
 void ACharacterBase::Init(UCharacterType* InCharacter)
 {
 	if(InCharacter == nullptr){return;}
@@ -48,12 +53,12 @@ void ACharacterBase::Init(UCharacterType* InCharacter)
 			FActorSpawnParameters Params;
 			Params.Owner = this;
 			Params.Name = *("PrimaryWeapon_" + this->GetName());
-			PrimaryWeapon = GetWorld()->SpawnActor<AWeaponBase>(AWeaponBase::StaticClass(),Params);
+			PrimaryWeapon = GetWorld()->SpawnActor<AWeaponBase>(InCharacter->PrimaryWeapon->WeaponClass,Params);
 			IFireable::Execute_InitWeapon(PrimaryWeapon , InCharacter->PrimaryWeapon, _FireStart);
-
 			FAttachmentTransformRules AttachParams {EAttachmentRule::SnapToTarget,false};
 			AttachParams.RotationRule = EAttachmentRule::SnapToTarget;
 			PrimaryWeapon->AttachToComponent(GetMesh(),AttachParams,"Weapon_R");
+			PrimaryWeapon->OnWeaponFired.AddUniqueDynamic(this,&ACharacterBase::Handle_WeaponFired);
 			SelectedWeapon = PrimaryWeapon;
 		}
 

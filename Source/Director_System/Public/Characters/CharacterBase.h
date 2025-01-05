@@ -14,7 +14,7 @@ class AWeaponBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FCharacterHealthChangeSignature,AActor*,DamageCauser,ACharacterBase*,DamagedCharacter, float,CurrentHealth,float,MaxHealth,float,Change);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCharacterDeathSignature, AController*, InstigatorController, ACharacterBase*, DamagedCharacter);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCharacterWeaponFiredSignature, AWeaponBase*, Weapon, ACharacterBase*,Character);
 UCLASS()
 class DIRECTOR_SYSTEM_API ACharacterBase : public ACharacter ,public IGenericTeamAgentInterface
 {
@@ -25,8 +25,13 @@ public:
 	ACharacterBase();
 
 	//Delegates
+	UPROPERTY(BlueprintAssignable)
+	FCharacterWeaponFiredSignature OnCharacterWeaponFiredSignature;
 	
+	UPROPERTY(BlueprintAssignable)
 	FCharacterDeathSignature OnDeath;
+	
+	UPROPERTY(BlueprintAssignable)
 	FCharacterHealthChangeSignature OnHealthChange;
 	
 protected:
@@ -85,6 +90,8 @@ public:
 	
 	
 private:
+	UFUNCTION()
+	void Handle_WeaponFired(AWeaponBase* Weapon);
 	UFUNCTION()
 	void Handle_Death(AController* InstigatorController);
 	UFUNCTION()

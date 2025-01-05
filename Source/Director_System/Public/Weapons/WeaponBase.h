@@ -7,6 +7,8 @@
 #include "UObject/Object.h"
 #include "WeaponBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponFiredSignature, AWeaponBase*, Weapon);
+
 class UArrowComponent;
 class UCameraComponent;
 /**
@@ -25,6 +27,10 @@ protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TObjectPtr<UArrowComponent> _Muzzle;
 public:
+
+	UPROPERTY(BlueprintAssignable)
+	FOnWeaponFiredSignature OnWeaponFired;
+	
 	virtual void InitWeapon_Implementation(UWeaponType* Weapon, USceneComponent* Fireloc) override;
 	virtual void StartFiring_Implementation() override;
 	virtual void StopFiring_Implementation() override;
@@ -36,7 +42,7 @@ public:
 	void SetTokenState(bool TokenReceived);
 protected:
 
-	bool bHasToken = false;
+	bool bHasToken = true;
 	virtual void OnFire();
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
@@ -47,6 +53,9 @@ protected:
 
 	UPROPERTY()
 	UCameraComponent* PlayerCam;
+	
+	UPROPERTY(VisibleAnywhere)
+	float GuaranteeHitDistance = 500;
 	
 	UPROPERTY(VisibleAnywhere)
 	float FiringTime;
@@ -64,6 +73,9 @@ protected:
 	FTimerHandle FiringTimer;
 	FTimerHandle ReloadTimer;
 
+protected:
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_OnWeaponFiredVFX();
 private:
 	void OnReloadComplete();
 };

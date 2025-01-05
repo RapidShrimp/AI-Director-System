@@ -17,6 +17,8 @@ void AAIControllerBase::SpawnAI(UCharacterType* InCharacter, UBehaviorTree* Beha
 	_ControlledPawn = GetWorld()->SpawnActor<ACharacterBase>(InCharacter->CharacterClass,InTransform.GetLocation(),InTransform.Rotator(),SpawnParameters);
 	if(!_ControlledPawn) {return;}
 	_ControlledPawn->SetGenericTeamId(FGenericTeamId{AssignTeamID});
+	_ControlledPawn->OnCharacterWeaponFiredSignature.AddUniqueDynamic(this,&AAIControllerBase::Handle_WeaponFired);
+	_ControlledPawn->OnDeath.AddUniqueDynamic(this,&AAIControllerBase::Handle_AIDeath);
 	_ControlledPawn->Init(InCharacter);
 }
 
@@ -48,6 +50,23 @@ void AAIControllerBase::SetFireTarget(AActor* Target)
 	}
 }
 
+void AAIControllerBase::SetDirected()
+{
+	UE_LOG(LogTemp,Error,TEXT("EYUP ITS HERE"));
+
+	if(!_ControlledPawn)
+	{
+		UE_LOG(LogTemp,Error,TEXT("MassiveFuckingProblem - No Controlled pawn when setting director defaults"));
+		return;
+	}
+	_ControlledPawn->GetCurrentWeapon()->SetTokenState(false);
+	if(_ControlledPawn->GetCurrentWeapon() == nullptr)
+	{
+		UE_LOG(LogTemp,Error,TEXT("No Weapon"));
+		return;
+	}
+}
+
 ETeamAttitude::Type AAIControllerBase::GetTeamAttitudeTowards(const AActor& Other) const
 {
 	const FGenericTeamId MyID  = FGenericTeamId::GetTeamIdentifier(_ControlledPawn);
@@ -65,4 +84,14 @@ ETeamAttitude::Type AAIControllerBase::GetTeamAttitudeTowards(const AActor& Othe
 		return ETeamAttitude::Hostile;
 	}
 	return ETeamAttitude::Neutral;
+}
+void AAIControllerBase::Handle_WeaponFired(AWeaponBase* Weapon, ACharacterBase* InCharacter)
+{
+	OnAICWeaponFired.Broadcast(Weapon,InCharacter);
+	BPHandle_WeaponFired(Weapon,InCharacter);
+}
+
+void AAIControllerBase::Handle_AIDeath(AController* Controller, ACharacterBase* CharacterBase)
+{
+	BPHandle_AIDeath(Controller,CharacterBase);
 }

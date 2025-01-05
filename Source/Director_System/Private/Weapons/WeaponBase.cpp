@@ -101,6 +101,7 @@ void AWeaponBase::SetFireTarget(AActor* Target)
 void AWeaponBase::SetTokenState(bool TokenReceived)
 {
 	bHasToken = TokenReceived;
+	UE_LOG(LogTemp,Error,TEXT("Updated Token of %s to %hdd"),*GetOwner()->GetName(),TokenReceived)
 }
 
 void AWeaponBase::OnFire()
@@ -119,7 +120,6 @@ void AWeaponBase::OnFire()
 	FVector StartLocation = FireLocation->GetComponentLocation();
 	if(PlayerCam)
 	{
-		UE_LOG(LogTemp,Display,TEXT("HERE"))
 		EndLocation =  PlayerCam->GetComponentLocation() + PlayerCam->GetForwardVector() * FireDistance;
 		FHitResult CamHit;
 		UKismetSystemLibrary::LineTraceSingle(this,FireLocation->GetComponentLocation(),EndLocation,UEngineTypes::ConvertToTraceType(ECC_Visibility),false,{Owner},EDrawDebugTrace::None,CamHit,true);
@@ -128,23 +128,24 @@ void AWeaponBase::OnFire()
 	else
 	{
 		if(FireTarget == nullptr){return;}
-
-		if(!bHasToken)
+		FVector FireDir =  FireTarget->GetActorLocation() - StartLocation;
+		
+		if(!bHasToken && FireDir.Length() > GuaranteeHitDistance)
 		{
-			//Working
-			FVector FireDir =  FireTarget->GetActorLocation() - StartLocation;
 			FireDir.Normalize();
-			DrawDebugLine(GetWorld(),FireTarget->GetActorLocation(),FireTarget->GetActorLocation() + FireDir * 50,FColor::Cyan);
+			//DrawDebugLine(GetWorld(),FireTarget->GetActorLocation(),FireTarget->GetActorLocation() + FireDir * 50,FColor::Cyan);
 			
-			//Working
 			FVector RightDir = FVector::CrossProduct(FVector::UpVector,FireDir);
-			DrawDebugLine(GetWorld(),FireTarget->GetActorLocation(),FireTarget->GetActorLocation() + RightDir * 50,FColor::Green);
+			//DrawDebugLine(GetWorld(),FireTarget->GetActorLocation(),FireTarget->GetActorLocation() + RightDir * 50,FColor::Green);
+			if(FMath::RandBool())
+			{
+				RightDir *= -1;
+			}
 
-			//Not Working
-			FVector VectorPass = FireTarget->GetActorLocation() + RightDir * 50;
+			FVector VectorPass = FireTarget->GetActorLocation() + RightDir * FMath::RandRange(50,100);
 			FVector FireDirection = VectorPass - StartLocation;
-			DrawDebugLine(GetWorld(),StartLocation,FireDirection * FireDistance ,FColor::Yellow);
-
+			//DrawDebugLine(GetWorld(),StartLocation,FireDirection * FireDistance ,FColor::Yellow);
+		
 			float RandomZ = FMath::RandRange(-50,50);
 			FireDirection.Z = FireDirection.Z + RandomZ;
 			EndLocation = FireDirection * FireDistance;
@@ -170,7 +171,9 @@ void AWeaponBase::OnFire()
 	{
 		UGameplayStatics::ApplyDamage(Result.GetActor(),Damage,GetInstigatorController(),GetOwner(),UDamageType::StaticClass());
 	}
+	OnWeaponFired.Broadcast(this);
 	CurrentAmmo--;
+	BP_OnWeaponFiredVFX();
 }
 
 void AWeaponBase::OnReloadComplete()

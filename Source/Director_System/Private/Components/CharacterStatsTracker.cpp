@@ -22,16 +22,16 @@ void UCharacterStatsTracker::BeginPlay()
 		return;
 	}
 
-	TrackedCharacter= Cast<ACharacterBase>(OwningController->GetPawn());
+	TrackedCharacter = Cast<ACharacterBase>(OwningController->GetPawn());
 	if(TrackedCharacter)
 	{
 		TrackedCharacter->OnHealthChange.AddUniqueDynamic(this,&UCharacterStatsTracker::Handle_HealthChange);
 		TrackedCharacter->OnDeath.AddUniqueDynamic(this,&UCharacterStatsTracker::Handle_Death);
-		UE_LOG(LogTemp,Display,TEXT("Successfully Bound All Stat Track Events"));
+		UE_LOG(LogTemp,Display,TEXT("Successfully Bound All Stat Track Events %s"),*GetOwner()->GetName());
 	}
 	else
 	{
-		UE_LOG(LogTemp,Error,TEXT("Controlled Pawn not of Type 'ACharacterBase'"));
+		UE_LOG(LogTemp,Warning,TEXT("Controlled Pawn not of Type 'ACharacterBase'"));
 	}
 }
 

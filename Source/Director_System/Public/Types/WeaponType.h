@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "Particles/ParticleEmitter.h"
 #include "WeaponType.generated.h"
 
 class AWeaponBase;
@@ -56,6 +57,8 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	float Damage = 25;
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<UParticleEmitter> MuzzleParticleSystem;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TArray<FVector> RailLocations;

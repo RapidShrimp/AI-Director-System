@@ -16,7 +16,7 @@ UHealthComponent::UHealthComponent()
 void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	CurrentHealth = MaxHealth;
 	GetOwner()->OnTakeAnyDamage.AddUniqueDynamic(this,&UHealthComponent::HandleDamage);
 }
 
@@ -57,7 +57,7 @@ void UHealthComponent::HandleDamage(AActor* DamagedActor, float Damage, const UD
 		return;
 	}
 
-	
+	//TODO - SCOPE CREEP
 	/*if(Immunities.Contains(DamageType->GetClass()))
 	{
 		//Create Some immunity class to return a damage value differently, for now ignore it :) - AS
@@ -70,5 +70,9 @@ void UHealthComponent::HandleDamage(AActor* DamagedActor, float Damage, const UD
 	CurrentHealth -= change;
 	OnHealthChanged.Broadcast(DamageCauser,CurrentHealth, MaxHealth, change);
 
-	if(CurrentHealth == 0.f) { OnDead.Broadcast(InstigatedBy); }
+	if(CurrentHealth == 0.f)
+	{
+		OnDead.Broadcast(InstigatedBy);
+		SetActive(false);
+	}
 }
