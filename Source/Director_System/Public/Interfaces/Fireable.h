@@ -24,7 +24,7 @@ class DIRECTOR_SYSTEM_API IFireable
 public:
 
 	UFUNCTION(BlueprintNativeEvent)
-	void InitWeapon(UWeaponType* Weapon);
+	void InitWeapon(UWeaponType* Weapon, USceneComponent* FireLocation);
 	UFUNCTION(BlueprintNativeEvent)
 	void StartFiring();
 	UFUNCTION(BlueprintNativeEvent)

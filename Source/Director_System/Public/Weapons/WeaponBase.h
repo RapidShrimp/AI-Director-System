@@ -25,7 +25,7 @@ protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TObjectPtr<UArrowComponent> _Muzzle;
 public:
-	virtual void InitWeapon_Implementation(UWeaponType* Weapon) override;
+	virtual void InitWeapon_Implementation(UWeaponType* Weapon, USceneComponent* Fireloc) override;
 	virtual void StartFiring_Implementation() override;
 	virtual void StopFiring_Implementation() override;
 	virtual void Reload_Implementation() override;
@@ -39,12 +39,14 @@ protected:
 	bool bHasToken = false;
 	virtual void OnFire();
 
-	TObjectPtr<UCameraComponent> OwningPlayerCam; 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	TObjectPtr<USceneComponent> FireLocation; 
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	TObjectPtr<AActor> FireTarget;
 
-	
+	UPROPERTY()
+	UCameraComponent* PlayerCam;
 	
 	UPROPERTY(VisibleAnywhere)
 	float FiringTime;

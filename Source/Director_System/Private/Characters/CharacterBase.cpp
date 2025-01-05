@@ -2,6 +2,8 @@
 
 
 #include "Director_System/Public/Characters/CharacterBase.h"
+
+#include "Components/ArrowComponent.h"
 #include "Director_System/Public/Types/CharacterType.h"
 #include "Director_System/Public/Weapons/WeaponBase.h"
 
@@ -11,6 +13,9 @@ ACharacterBase::ACharacterBase()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	_FireStart = CreateDefaultSubobject<UArrowComponent>(TEXT("WeaponFireStartLocation"));
+	_FireStart->SetupAttachment(RootComponent);
+	
 	_Health = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComp"));
 	_Health->OnDead.AddUniqueDynamic(this,&ACharacterBase::Handle_Death);
 	_Health->OnHealthChanged.AddUniqueDynamic(this,&ACharacterBase::Handle_HealthChange);
@@ -44,7 +49,7 @@ void ACharacterBase::Init(UCharacterType* InCharacter)
 			Params.Owner = this;
 			Params.Name = *("PrimaryWeapon_" + this->GetName());
 			PrimaryWeapon = GetWorld()->SpawnActor<AWeaponBase>(AWeaponBase::StaticClass(),Params);
-			IFireable::Execute_InitWeapon(PrimaryWeapon , InCharacter->PrimaryWeapon);
+			IFireable::Execute_InitWeapon(PrimaryWeapon , InCharacter->PrimaryWeapon, _FireStart);
 
 			FAttachmentTransformRules AttachParams {EAttachmentRule::SnapToTarget,false};
 			AttachParams.RotationRule = EAttachmentRule::SnapToTarget;
@@ -52,7 +57,7 @@ void ACharacterBase::Init(UCharacterType* InCharacter)
 			SelectedWeapon = PrimaryWeapon;
 		}
 
-		if(InCharacter->SecondaryWeapon != nullptr)
+		/*if(InCharacter->SecondaryWeapon != nullptr)
 		{
 			FActorSpawnParameters Params;
 			Params.Owner = this;
@@ -63,7 +68,7 @@ void ACharacterBase::Init(UCharacterType* InCharacter)
 			FAttachmentTransformRules AttachParams {EAttachmentRule::SnapToTarget,false};
 			AttachParams.RotationRule = EAttachmentRule::SnapToTarget;
 			SecondaryWeapon->AttachToComponent(GetMesh(),AttachParams,"Weapon_L");
-		}
+		}*/
 	}
 }
 

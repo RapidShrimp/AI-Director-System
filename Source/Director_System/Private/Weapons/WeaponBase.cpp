@@ -17,8 +17,7 @@ AWeaponBase::AWeaponBase()
 	_Muzzle = CreateDefaultSubobject<UArrowComponent>("MuzzleLocation");
 	_Muzzle->SetupAttachment(_Mesh);
 }
-
-void AWeaponBase::InitWeapon_Implementation(UWeaponType* Weapon)
+void AWeaponBase::InitWeapon_Implementation(UWeaponType* Weapon, USceneComponent* Fireloc)
 {
 	if(Weapon == nullptr)
 	{
@@ -34,13 +33,15 @@ void AWeaponBase::InitWeapon_Implementation(UWeaponType* Weapon)
 		{
 			UE_LOG(LogTemp,Error,TEXT("Weapon %s has no owner"), *GetName());
 		}
-		OwningPlayerCam = Cast<UCameraComponent>(OwningCharacter->GetComponentByClass(UCameraComponent::StaticClass()));
-		if(OwningPlayerCam)
+		if(UCameraComponent* Camera = Cast<UCameraComponent>(OwningCharacter->GetComponentByClass(UCameraComponent::StaticClass())))
 		{
+			PlayerCam = Camera;
+			FireLocation = Camera;
 			UE_LOG(LogTemp,Error,TEXT("Weapon Owned by Player"));
 		}
 		else
 		{
+			FireLocation = Fireloc;
 			UE_LOG(LogTemp,Error,TEXT("Weapon Owned by AI"));
 		}
 	}
@@ -59,6 +60,8 @@ void AWeaponBase::InitWeapon_Implementation(UWeaponType* Weapon)
 
 	if(_Mesh->DoesSocketExist("Muzzle") == false){return;}
 	_Muzzle->SetRelativeLocation(_Mesh->GetSocketLocation("Muzzle"));
+
+
 }
 
 void AWeaponBase::StartFiring_Implementation()
@@ -113,12 +116,13 @@ void AWeaponBase::OnFire()
 	
 	FHitResult Result;
 	FVector EndLocation;
-	FVector StartLocation = _Muzzle->GetComponentLocation();
-	if(OwningPlayerCam)
+	FVector StartLocation = FireLocation->GetComponentLocation();
+	if(PlayerCam)
 	{
-		EndLocation =  OwningPlayerCam->GetComponentLocation() + OwningPlayerCam->GetForwardVector() * FireDistance;
+		UE_LOG(LogTemp,Display,TEXT("HERE"))
+		EndLocation =  PlayerCam->GetComponentLocation() + PlayerCam->GetForwardVector() * FireDistance;
 		FHitResult CamHit;
-		UKismetSystemLibrary::LineTraceSingle(this,OwningPlayerCam->GetComponentLocation(),EndLocation,UEngineTypes::ConvertToTraceType(ECC_Visibility),false,{},EDrawDebugTrace::None,CamHit,true);
+		UKismetSystemLibrary::LineTraceSingle(this,FireLocation->GetComponentLocation(),EndLocation,UEngineTypes::ConvertToTraceType(ECC_Visibility),false,{Owner},EDrawDebugTrace::None,CamHit,true);
 		EndLocation = CamHit.bBlockingHit ? EndLocation = CamHit.Location : CamHit.TraceEnd;
 	}
 	else
@@ -147,7 +151,7 @@ void AWeaponBase::OnFire()
 		}
 		else
 		{
-			EndLocation = FireTarget->GetActorLocation();
+			EndLocation = FireTarget->GetActorLocation() + FVector(0,0,50);
 		}
 	}
 	
@@ -156,13 +160,13 @@ void AWeaponBase::OnFire()
 		StartLocation,
 		EndLocation,
 		UEngineTypes::ConvertToTraceType(ECC_Visibility),
-		false,{},
-		EDrawDebugTrace::Persistent,
+		false,{GetOwner()},
+		EDrawDebugTrace::ForDuration,
 		Result,
 		true,
 		FLinearColor::Red,
-		FLinearColor::Green,5.0f);
-	if(Hit)
+		FLinearColor::Green,1.0f);
+	if(Hit && bHasToken)
 	{
 		UGameplayStatics::ApplyDamage(Result.GetActor(),Damage,GetInstigatorController(),GetOwner(),UDamageType::StaticClass());
 	}

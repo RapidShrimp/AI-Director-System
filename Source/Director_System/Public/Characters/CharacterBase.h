@@ -40,6 +40,8 @@ protected:
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly);
 	TObjectPtr<AWeaponBase> SecondaryWeapon;
 
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	TObjectPtr<UArrowComponent> _FireStart;
 	
 #pragma  region TeamInterface
 
