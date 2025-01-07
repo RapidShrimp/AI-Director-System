@@ -39,6 +39,7 @@ public:
 
 	void SetFireTarget(AActor* Target);
 
+	UFUNCTION(BlueprintCallable)
 	void SetTokenState(bool TokenReceived);
 protected:
 

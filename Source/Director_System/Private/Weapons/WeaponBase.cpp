@@ -129,8 +129,10 @@ void AWeaponBase::OnFire()
 	{
 		if(FireTarget == nullptr){return;}
 		FVector FireDir =  FireTarget->GetActorLocation() - StartLocation;
-		
-		if(!bHasToken && FireDir.Length() > GuaranteeHitDistance)
+
+		bool RandomHit = FMath::RandBool();
+
+		if(!bHasToken && FireDir.Length() > GuaranteeHitDistance || RandomHit)
 		{
 			FireDir.Normalize();
 			//DrawDebugLine(GetWorld(),FireTarget->GetActorLocation(),FireTarget->GetActorLocation() + FireDir * 50,FColor::Cyan);
@@ -152,7 +154,7 @@ void AWeaponBase::OnFire()
 		}
 		else
 		{
-			EndLocation = FireTarget->GetActorLocation() + FVector(0,0,50);
+			EndLocation = FireTarget->GetActorLocation() + FVector(0,0,0);
 		}
 	}
 	
