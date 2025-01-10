@@ -64,7 +64,7 @@ void UHealthComponent::HandleDamage(AActor* DamagedActor, float Damage, const UD
 		return;
 	}*/
 
-	UE_LOG(LogTemp,Warning,TEXT("Damage %s %f"),*GetOwner()->GetName(),Damage)
+	//UE_LOG(LogTemp,Warning,TEXT("Damage %s %f"),*GetOwner()->GetName(),Damage)
 	
 	const float change = FMath::Max(FMath::Min(CurrentHealth, Damage), CurrentHealth-MaxHealth);
 	CurrentHealth -= change;

@@ -42,6 +42,9 @@ public:
 	void SetFireTarget(AActor* Target);
 	UFUNCTION(BlueprintCallable)
 	void SetDirected();
+
+	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
+	TArray<AActor*> GetPercievedActors();
 protected:
 	UFUNCTION()
 	void Handle_WeaponFired(AWeaponBase* Weapon, ACharacterBase* InCharacter);

@@ -52,8 +52,6 @@ void AAIControllerBase::SetFireTarget(AActor* Target)
 
 void AAIControllerBase::SetDirected()
 {
-	UE_LOG(LogTemp,Error,TEXT("EYUP ITS HERE"));
-
 	if(!_ControlledPawn)
 	{
 		UE_LOG(LogTemp,Error,TEXT("MassiveFuckingProblem - No Controlled pawn when setting director defaults"));
@@ -65,6 +63,12 @@ void AAIControllerBase::SetDirected()
 		UE_LOG(LogTemp,Error,TEXT("No Weapon"));
 		return;
 	}
+}
+
+TArray<AActor*> AAIControllerBase::GetPercievedActors_Implementation()
+{
+	TArray<AActor*> Empty;
+	return Empty;
 }
 
 ETeamAttitude::Type AAIControllerBase::GetTeamAttitudeTowards(const AActor& Other) const

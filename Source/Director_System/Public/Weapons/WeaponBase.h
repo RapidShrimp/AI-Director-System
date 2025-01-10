@@ -41,9 +41,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetTokenState(bool TokenReceived);
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	bool bHasToken = true;
 protected:
 
-	bool bHasToken = true;
+	bool IsControlled = false;
 	virtual void OnFire();
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)

@@ -12,7 +12,7 @@
 AWeaponBase::AWeaponBase()
 {
 	_Mesh = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon Mesh");
-	_Mesh->SetupAttachment(RootComponent);
+	SetRootComponent(_Mesh);
 
 	_Muzzle = CreateDefaultSubobject<UArrowComponent>("MuzzleLocation");
 	_Muzzle->SetupAttachment(_Mesh);
@@ -101,7 +101,8 @@ void AWeaponBase::SetFireTarget(AActor* Target)
 void AWeaponBase::SetTokenState(bool TokenReceived)
 {
 	bHasToken = TokenReceived;
-	UE_LOG(LogTemp,Error,TEXT("Updated Token of %s to %hdd"),*GetOwner()->GetName(),TokenReceived)
+	IsControlled = true;
+	//UE_LOG(LogTemp,Error,TEXT("Updated Token of %s to %hdd"),*GetOwner()->GetName(),TokenReceived)
 }
 
 void AWeaponBase::OnFire()
@@ -129,9 +130,9 @@ void AWeaponBase::OnFire()
 	{
 		if(FireTarget == nullptr){return;}
 		FVector FireDir =  FireTarget->GetActorLocation() - StartLocation;
-
-		bool RandomHit = FMath::RandBool();
-
+		
+		bool RandomHit = IsControlled  ? false : FMath::RandBool();
+		
 		if(!bHasToken && FireDir.Length() > GuaranteeHitDistance || RandomHit)
 		{
 			FireDir.Normalize();
@@ -155,6 +156,10 @@ void AWeaponBase::OnFire()
 		else
 		{
 			EndLocation = FireTarget->GetActorLocation() + FVector(0,0,0);
+			if(bHasToken && IsControlled)
+			{
+				SetTokenState(false);
+			}
 		}
 	}
 	
@@ -162,7 +167,7 @@ void AWeaponBase::OnFire()
 	bool Hit = UKismetSystemLibrary::LineTraceSingle(this,
 		StartLocation,
 		EndLocation,
-		UEngineTypes::ConvertToTraceType(ECC_Visibility),
+		UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel1),
 		false,{GetOwner()},
 		EDrawDebugTrace::ForDuration,
 		Result,
@@ -171,6 +176,7 @@ void AWeaponBase::OnFire()
 		FLinearColor::Green,1.0f);
 	if(Hit && bHasToken)
 	{
+		//Team Checks
 		UGameplayStatics::ApplyDamage(Result.GetActor(),Damage,GetInstigatorController(),GetOwner(),UDamageType::StaticClass());
 	}
 	OnWeaponFired.Broadcast(this);
