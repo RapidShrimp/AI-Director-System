@@ -54,10 +54,10 @@ void ACharacterBase::Init(UCharacterType* InCharacter)
 			Params.Owner = this;
 			Params.Name = *("PrimaryWeapon_" + this->GetName());
 			PrimaryWeapon = GetWorld()->SpawnActor<AWeaponBase>(InCharacter->PrimaryWeapon->WeaponClass,Params);
-			IFireable::Execute_InitWeapon(PrimaryWeapon , InCharacter->PrimaryWeapon, _FireStart);
 			FAttachmentTransformRules AttachParams {EAttachmentRule::SnapToTarget,false};
 			AttachParams.RotationRule = EAttachmentRule::SnapToTarget;
 			PrimaryWeapon->AttachToComponent(GetMesh(),AttachParams,"Weapon_R");
+			IFireable::Execute_InitWeapon(PrimaryWeapon , InCharacter->PrimaryWeapon, _FireStart);
 			PrimaryWeapon->OnWeaponFired.AddUniqueDynamic(this,&ACharacterBase::Handle_WeaponFired);
 			SelectedWeapon = PrimaryWeapon;
 		}

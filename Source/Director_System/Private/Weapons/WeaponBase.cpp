@@ -60,7 +60,7 @@ void AWeaponBase::InitWeapon_Implementation(UWeaponType* Weapon, USceneComponent
 
 	if(_Mesh->DoesSocketExist("Muzzle") == false){return;}
 	_Muzzle->SetRelativeLocation(_Mesh->GetSocketLocation("Muzzle"));
-
+	SetActorRelativeRotation(FRotator {9,186,0});
 
 }
 
