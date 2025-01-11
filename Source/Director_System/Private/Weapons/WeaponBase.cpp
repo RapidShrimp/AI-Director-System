@@ -156,10 +156,7 @@ void AWeaponBase::OnFire()
 		else
 		{
 			EndLocation = FireTarget->GetActorLocation() + FVector(0,0,0);
-			if(bHasToken && IsControlled)
-			{
-				SetTokenState(false);
-			}
+
 		}
 	}
 	
@@ -177,6 +174,7 @@ void AWeaponBase::OnFire()
 	if(Hit && bHasToken)
 	{
 		//Team Checks
+		if(bHasToken && IsControlled) {SetTokenState(false);}
 		UGameplayStatics::ApplyDamage(Result.GetActor(),Damage,GetInstigatorController(),GetOwner(),UDamageType::StaticClass());
 	}
 	OnWeaponFired.Broadcast(this);
