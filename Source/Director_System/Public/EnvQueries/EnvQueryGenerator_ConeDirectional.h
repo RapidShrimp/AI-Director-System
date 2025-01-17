@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DataProviders/AIDataProvider.h"
+#include "EQS_Enums.h"
 #include "EnvironmentQuery/Generators/EnvQueryGenerator_ProjectedPoints.h"
 #include "EnvQueryGenerator_ConeDirectional.generated.h"
 
@@ -11,14 +12,7 @@
  * 
  */
 
-UENUM()
-enum class E_ConeDirection : uint8
-{
-	forward = 0 UMETA(DisplayName="Forward"),
-	right = 1 UMETA(DisplayName="Right"),
-	left = 2 UMETA(DisplayName="Left"),
-	back = 3 UMETA(DisplayName="Backwards")
-};
+
 
 
 UCLASS(meta = (DisplayName = "Points: Cone(Directional)"))
