@@ -10,7 +10,7 @@
  * 
  */
 
-UENUM()
+UENUM(BlueprintType)
 enum class E_ConeDirection : uint8
 {
 	forward = 0 UMETA(DisplayName="Forward"),
