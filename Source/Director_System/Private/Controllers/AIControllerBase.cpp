@@ -97,5 +97,6 @@ void AAIControllerBase::Handle_WeaponFired(AWeaponBase* Weapon, ACharacterBase* 
 
 void AAIControllerBase::Handle_AIDeath(AController* Controller, ACharacterBase* CharacterBase)
 {
+	OnAIDead.Broadcast(this,Controller,CharacterBase);
 	BPHandle_AIDeath(Controller,CharacterBase);
 }

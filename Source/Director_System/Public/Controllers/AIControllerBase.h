@@ -7,6 +7,7 @@
 #include "AIControllerBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FAICWeaponFiredSignature, AWeaponBase*, Weapon, ACharacterBase*, OwnedCharacter);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAICDeathSignature, AAIController*, DeadController, AController*, InstigatorController, ACharacterBase*, DamagedCharacter);
 
 class UCharacterType;
 class ACharacterBase;
@@ -17,8 +18,14 @@ class DIRECTOR_SYSTEM_API AAIControllerBase : public AAIController
 {
 	GENERATED_BODY()
 public:
+
 	UPROPERTY(BlueprintAssignable)
 	FAICWeaponFiredSignature OnAICWeaponFired;
+
+	UPROPERTY(BlueprintAssignable)
+	FAICDeathSignature OnAIDead;
+
+	
 	
 protected:
 
