@@ -3,6 +3,7 @@
 
 #include "Components/HealthComponent.h"
 
+#include "GenericTeamAgentInterface.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -56,7 +57,7 @@ void UHealthComponent::HandleDamage(AActor* DamagedActor, float Damage, const UD
 		UE_LOG(LogTemp,Warning,TEXT("Cannot Damage %s - Can Take Damage is off"),*GetOwner()->GetName())
 		return;
 	}
-
+	
 	//TODO - SCOPE CREEP
 	/*if(Immunities.Contains(DamageType->GetClass()))
 	{

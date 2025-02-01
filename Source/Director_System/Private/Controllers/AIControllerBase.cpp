@@ -50,7 +50,7 @@ void AAIControllerBase::SetFireTarget(AActor* Target)
 	}
 }
 
-void AAIControllerBase::SetDirected()
+void AAIControllerBase::SetDirected(TArray<AActor*> Teammates)
 {
 	if(!_ControlledPawn)
 	{
@@ -58,6 +58,7 @@ void AAIControllerBase::SetDirected()
 		return;
 	}
 	_ControlledPawn->GetCurrentWeapon()->SetTokenState(false);
+	_ControlledPawn->GetCurrentWeapon()->SetFriendlyActors(Teammates);
 	if(_ControlledPawn->GetCurrentWeapon() == nullptr)
 	{
 		UE_LOG(LogTemp,Error,TEXT("No Weapon"));

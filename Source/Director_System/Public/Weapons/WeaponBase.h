@@ -41,9 +41,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetTokenState(bool TokenReceived);
+	UFUNCTION(BlueprintCallable)
+	void SetFriendlyActors(TArray<AActor*> TeamActors);
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	bool bHasToken = true;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	TArray<AActor*> FriendlyActors;
 protected:
 
 	bool IsControlled = false;

@@ -102,6 +102,12 @@ void AWeaponBase::SetTokenState(bool TokenReceived)
 {
 	bHasToken = TokenReceived;
 	IsControlled = true;
+}
+
+void AWeaponBase::SetFriendlyActors( TArray<AActor*> TeamActors)
+{
+	if(TeamActors.IsEmpty()){return;} //Saftey Check
+	FriendlyActors = TeamActors;
 	//UE_LOG(LogTemp,Error,TEXT("Updated Token of %s to %hdd"),*GetOwner()->GetName(),TokenReceived)
 }
 
@@ -159,13 +165,13 @@ void AWeaponBase::OnFire()
 
 		}
 	}
-	
+
 	
 	bool Hit = UKismetSystemLibrary::LineTraceSingle(this,
 		StartLocation,
 		EndLocation,
 		UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel1),
-		false,{GetOwner()},
+		false,FriendlyActors,
 		EDrawDebugTrace::ForDuration,
 		Result,
 		true,

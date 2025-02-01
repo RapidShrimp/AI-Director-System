@@ -48,7 +48,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetFireTarget(AActor* Target);
 	UFUNCTION(BlueprintCallable)
-	void SetDirected();
+	void SetDirected(TArray<AActor*> Teammates);
 
 	UFUNCTION(BlueprintCallable,BlueprintNativeEvent)
 	TArray<AActor*> GetPercievedActors();
