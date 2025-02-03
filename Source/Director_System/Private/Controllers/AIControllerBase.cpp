@@ -72,10 +72,17 @@ TArray<AActor*> AAIControllerBase::GetPercievedActors_Implementation()
 	return Empty;
 }
 
+int AAIControllerBase::BP_GetTeamAttitudeTowards(const AActor* Other)
+{
+	return GetTeamAttitudeTowards(*Other);
+}
+
 ETeamAttitude::Type AAIControllerBase::GetTeamAttitudeTowards(const AActor& Other) const
 {
+
 	const FGenericTeamId MyID  = FGenericTeamId::GetTeamIdentifier(_ControlledPawn);
 	const FGenericTeamId OtherTeamID (FGenericTeamId::GetTeamIdentifier(&Other));
+	//UE_LOG(LogTemp,Display,TEXT("%s MyID = %d  Other %s ID: %d"),*_ControlledPawn.GetName(),MyID.GetId(),*Other.GetName(),OtherTeamID.GetId());
 	if(MyID.GetId() == 255)
 	{
 		return ETeamAttitude::Neutral;

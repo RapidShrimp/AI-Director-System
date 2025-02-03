@@ -13,6 +13,12 @@ class UCharacterType;
 class ACharacterBase;
 class AWeaponBase;
 
+UENUM()
+enum class EBP_TeamAttitude
+{
+	Friendly
+};
+
 UCLASS()
 class DIRECTOR_SYSTEM_API AAIControllerBase : public AAIController
 {
@@ -25,8 +31,8 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FAICDeathSignature OnAIDead;
 
-	
-	
+	UFUNCTION(BlueprintCallable)
+	int BP_GetTeamAttitudeTowards(const AActor* Other);
 protected:
 
 	UPROPERTY(VisibleAnywhere)
@@ -35,6 +41,8 @@ protected:
 	uint8 DefaultTeamID = 255; //No Team ID Default
 	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
 	TObjectPtr<ACharacterBase> _ControlledPawn;
+
+	/**0-Friendly 1-Neutral 2-Hostile*/
 	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
